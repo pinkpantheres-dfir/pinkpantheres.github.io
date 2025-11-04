@@ -1,170 +1,248 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Pink Panther Mascot Scroll Demo</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PinkPantheres — DFIR & OSINT Portfolio</title>
+  <meta name="description" content="PinkPantheres — DFIR portfolio, case studies, CTF writeups and OSINT hunting." />
+  <link rel="icon" href="/assets/favicon.png" />
+  <style>
+  :root{
+    --bg:#07070b;              /* deep night */
+    --panel:#0f0f14;
+    --neon-pink:#ff005c;       /* tactical hot-pink */
+    --radar-green:#00ff66;     /* accent */
+    --muted:#bfc3cc;
+    --glass: rgba(255,255,255,0.03);
+    --card-radius:12px;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  /* page layout */
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--muted);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1100px;margin:36px auto;padding:24px}
 
-<style>
-:root{
-  --hot-pink: #ff69b4;
-  --rose-pink: #e9a4c6;
-  --outline: #111;
-  --rope-color: #7a5f5f;
-}
+  /* radar grid background (full-screen) */
+  .radar-bg{
+    position:fixed;inset:0;pointer-events:none;z-index:0;mix-blend-mode:screen;opacity:0.9;
+    background: radial-gradient(ellipse at center rgba(0,0,0,0.0), rgba(0,0,0,0.0)), linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.0));
+  }
+  .grid-canvas{position:absolute;inset:0}
 
-#panther-mascot {
-  position: fixed;
-  right: 24px;
-  bottom: 16px;
-  width: 120px;
-  height: 320px;
-  z-index: 9999;
-  pointer-events: none;
-  display: block;
-  transform-origin: 50% 50%;
-}
+  /* header */
+  header{display:flex;align-items:center;gap:18px;z-index:4;position:relative}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:64px;height:64px;flex:0 0 64px;border-radius:12px;background:linear-gradient(135deg,var(--panel),#0b0b10);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,0.6) inset}
+  .logo svg{width:44px;height:44px}
+  h1{margin:0;font-size:20px;color:var(--neon-pink);letter-spacing:0.4px}
+  p.lead{margin:0;color:var(--muted);opacity:0.9}
 
-#panther-mascot .rope {
-  position: fixed;
-  right: 80px;
-  top: 0;
-  bottom: 0;
-  width: 6px;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 9998;
-}
+  /* hero */
+  .hero{display:grid;grid-template-columns:1fr 320px;gap:22px;margin-top:18px;align-items:start}
+  .hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 30px rgba(0,0,0,0.6)}
+  .hero-title{font-size:20px;color:#fff;margin:0 0 6px}
+  .hero-sub{color:var(--muted);margin:0 0 12px}
+  .ctas{display:flex;gap:10px}
+  .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:var(--muted);cursor:pointer}
+  .btn.primary{background:linear-gradient(90deg,var(--neon-pink),#ff63a8);color:#0b0710;border:none}
 
-#panther-mascot .rope::before {
-  content: "";
-  width: 6px;
-  height: 100%;
-  background:
-    linear-gradient(90deg, rgba(0,0,0,0.06) 0 10%, transparent 10% 100%),
-    repeating-linear-gradient(to bottom, var(--rope-color) 0 6px, rgba(0,0,0,0.06) 6px 12px);
-  border-left: 1px solid rgba(0,0,0,0.15);
-  border-right: 1px solid rgba(255,255,255,0.03);
-  animation: rope-sway 3s ease-in-out infinite;
-  transform-origin: top center;
-}
+  /* right column: radar */
+  .radar-card{height:280px;position:relative;overflow:hidden}
+  .radar-canvas{position:absolute;inset:0}
+  .radar-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+  .radar-label{background:var(--glass);padding:6px 8px;border-radius:8px;color:var(--muted);font-size:13px}
 
-@keyframes rope-sway{
-  0%{ transform: rotate(-1deg); }
-  50%{ transform: rotate(1.2deg); }
-  100%{ transform: rotate(-1deg); }
-}
+  /* sections */
+  section{margin-top:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(260px,1fr));gap:16px}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+  .card h3{margin:0 0 6px;color:#fff}
+  .card p{margin:0;color:var(--muted);font-size:13px}
+  .tags{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+  .tag{font-size:12px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02);color:var(--muted)}
 
-.mascot-wrap{
-  position: absolute;
-  right: 0;
-  bottom: 20px;
-  width: 120px;
-  height: 120px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transform: translateY(0);
-  transition: transform 220ms linear;
-  will-change: transform;
-}
+  /* footer */
+  footer{margin-top:34px;color:var(--muted);font-size:13px;padding:12px 0;text-align:center}
 
-.pixelated { image-rendering: pixelated; image-rendering: crisp-edges; }
+  /* floating mascot (neon panther outline) */
+  .mascot{position:fixed;right:26px;bottom:22px;width:140px;height:140px;z-index:6;pointer-events:none}
+  .mascot svg{width:100%;height:100%;filter:drop-shadow(0 8px 18px rgba(0,0,0,0.6))}
 
-.climb-up{ animation: climb-up 0.25s steps(1) infinite; }
-.climb-down{ animation: climb-down 0.25s steps(1) infinite; }
-
-@keyframes climb-up {
-  0% { transform: translateY(6px) }
-  50% { transform: translateY(-6px) }
-  100% { transform: translateY(6px) }
-}
-@keyframes climb-down {
-  0% { transform: translateY(-6px) }
-  50% { transform: translateY(6px) }
-  100% { transform: translateY(-6px) }
-}
-
-.idle { animation: idle-loop 1s steps(1) infinite; }
-@keyframes idle-loop{
-  0% { transform: translateY(0) }
-  50% { transform: translateY(-2px) }
-  100% { transform: translateY(0) }
-}
-
-.pose-climb-up .frame-climb { display:block; }
-.pose-climb-up .frame-idle { display:none; }
-.pose-climb-down .frame-climb { display:block; }
-.pose-climb-down .frame-idle { display:none; }
-.pose-idle .frame-climb { display:none; }
-.pose-idle .frame-idle { display:block; }
-
-@media (max-width:720px){
-  #panther-mascot { display:none; }
-}
-
-body { min-height:200vh; background: linear-gradient(#0f1724, #071024); color:#fff; font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial; }
-
-.demo-note { position:fixed; left:16px; top:16px; background:rgba(255,255,255,0.03); padding:10px 12px; border-radius:8px; font-size:13px; max-width:320px; line-height:1.25; color:#ddd; }
-
-#panther-mascot svg { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.45)); }
-</style>
+  /* small responsive tweaks */
+  @media(max-width:880px){.hero{grid-template-columns:1fr}.mascot{display:none}}
+  </style>
 </head>
 <body>
-
-<div class="demo-note">
-  Scroll to see the Pink Panther climb the rope 🐾<br>
-  Idle after 2s of no scroll.
-</div>
-
-<!-- ✅ CLEAN MASCOT -->
-<div id="panther-mascot">
-  <div class="rope"></div>
-  <div class="mascot-wrap pose-idle" id="mascotWrap">
-    <!-- ✅ Your original SVG (unchanged) -->
-    <!-- ✅ (SVG omitted here due to length, but you keep your entire SVG exactly as before) -->
-    <!-- Paste your SVG frames HERE exactly as they were -->
+  <div class="radar-bg" aria-hidden="true">
+    <canvas id="grid" class="grid-canvas"></canvas>
   </div>
-</div>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <!-- simple neon panther outline logo -->
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PinkPantheres logo">
+            <path d="M8 40 C12 22, 36 12, 48 16 C56 18, 60 30, 52 40 C44 52, 20 54, 8 40 Z" stroke="url(#p)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+            <defs>
+              <linearGradient id="p" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0" stop-color="#ff6a86" />
+                <stop offset="1" stop-color="#ff005c" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <h1>PinkPantheres</h1>
+          <p class="lead">DFIR • OSINT • CTF — hunting threats with a pink edge</p>
+        </div>
+      </div>
+    </header>
 
-<script>
-// ✅ SCROLL ANIMATION SCRIPT (fixed & cleaned)
-const mascotWrap = document.getElementById('mascotWrap');
-let lastScrollY = window.scrollY;
-let idleTimer = null;
-let currentYOffset = 0;
-const MAX_OFFSET = window.innerHeight - 120;
-const MIN_OFFSET = 20;
-const STEP = 12;
+    <main>
+      <div class="hero">
+        <div class="hero-card">
+          <h2 class="hero-title">Tracking digital threats &amp; solving CTFs</h2>
+          <p class="hero-sub">Case studies, forensic notes, and tooling I use to investigate mobile & network incidents.</p>
+          <div class="ctas">
+            <button class="btn primary" onclick="location.hash='cases'">View Cases</button>
+            <button class="btn" onclick="location.hash='ctf'">CTF Writeups</button>
+            <button class="btn" onclick="downloadResume()">Resume</button>
+          </div>
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Based in India • Open to collaborations • <a href="#contact" style="color:var(--neon-pink);text-decoration:none">Contact</a></div>
+        </div>
 
-function pose(p){ mascotWrap.className = "mascot-wrap " + p; }
+        <div class="hero-card radar-card">
+          <canvas id="radar" class="radar-canvas"></canvas>
+          <div class="radar-overlay"><div class="radar-label">Active hunt: 3 nodes</div></div>
+        </div>
+      </div>
 
-pose("pose-idle idle");
+      <section id="cases">
+        <h2 style="color:#fff;margin:0 0 8px">Recent Case Studies</h2>
+        <div class="grid">
+          <article class="card">
+            <h3>Android App Forensic — Malicious Ad SDK</h3>
+            <p>Recovered network indicators, identified dynamic code loading and produced IOC list for takedown.</p>
+            <div class="tags"><span class="tag">Android</span><span class="tag">Static Analysis</span><span class="tag">Network IOCs</span></div>
+          </article>
 
-function goIdle(){ pose("pose-idle idle"); }
+          <article class="card">
+            <h3>Phishing Campaign Attribution</h3>
+            <p>OSINT-led cluster analysis and domain takedown coordination with hosting providers.</p>
+            <div class="tags"><span class="tag">OSINT</span><span class="tag">Threat Intel</span></div>
+          </article>
 
-function onScroll(){
-  const dy = window.scrollY - lastScrollY;
-  if(Math.abs(dy) > 2){
-    if(dy < 0) {
-      pose("climb-up pose-climb-up");
-      currentYOffset = Math.min(MAX_OFFSET, currentYOffset + STEP);
-    } else {
-      pose("climb-down pose-climb-down");
-      currentYOffset = Math.max(MIN_OFFSET, currentYOffset - STEP);
-    }
+          <article class="card">
+            <h3>Memory Analysis — Windows Ransomware</h3>
+            <p>Volatility-based extraction of C2 and runtime decryption routines.</p>
+            <div class="tags"><span class="tag">Memory</span><span class="tag">Volatility</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="ctf" style="margin-top:18px">
+        <h2 style="color:#fff;margin:0 0 8px">CTF / Tools</h2>
+        <div class="grid">
+          <article class="card">
+            <h3>Stego Challenge Writeup</h3>
+            <p>Used stegsolve + zsteg to recover hidden PNG chunks, then reconstructed message.</p>
+            <div class="tags"><span class="tag">Stego</span><span class="tag">Writeup</span></div>
+          </article>
+          <article class="card">
+            <h3>Android Reverse — Obfuscated Dex</h3>
+            <p>Smali patching and signature-based deobfuscation to extract command dispatch logic.</p>
+            <div class="tags"><span class="tag">Android</span><span class="tag">Reverse</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="contact">
+        <h2 style="color:#fff;margin:0 0 8px">Contact &amp; Links</h2>
+        <div class="card" style="display:flex;gap:12px;align-items:center">
+          <div style="flex:1">
+            <p style="margin:0;color:var(--muted)">Email: <a href="mailto:hello@pinkpantheres.dev" style="color:var(--neon-pink)">hello@pinkpantheres.dev</a></p>
+            <p style="margin:6px 0 0;color:var(--muted)">GitHub: <a href="https://github.com/pinkpantheres" style="color:var(--neon-pink)">github.com/pinkpantheres</a></p>
+          </div>
+          <div style="min-width:160px;text-align:right;color:var(--muted);font-size:13px">Available for freelance DFIR & OSINT engagements</div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <small>© <span id="year"></span> PinkPantheres — DFIR • OSINT • CTF</small>
+    </footer>
+  </div>
+
+  <!-- floating neon panther mascot -->
+  <div class="mascot" aria-hidden="true">
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+      <g fill="none" stroke="url(#gp)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 96 C30 50, 80 28, 114 40 C140 50, 146 78, 120 98 C100 114, 40 122, 18 96 Z" />
+      </g>
+      <defs>
+        <linearGradient id="gp" x1="0" x2="1">
+          <stop offset="0" stop-color="#ff6a86" />
+          <stop offset="1" stop-color="#ff005c" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <script>
+  // small helpers: year, resume download stub
+  document.getElementById('year').textContent = new Date().getFullYear();
+  function downloadResume(){
+    // placeholder: replace with resume URL in repo (e.g. /assets/resume.pdf)
+    window.open('/assets/resume.pdf','_blank');
   }
 
-  mascotWrap.style.transform = `translateY(${-currentYOffset}px)`;
-  lastScrollY = window.scrollY;
+  // Animated radar & grid (simple 2D canvas)
+  (function(){
+    const grid = document.getElementById('grid');
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    function resize(){
+      grid.width = innerWidth * dpr; grid.height = innerHeight * dpr;
+      grid.style.width = innerWidth + 'px'; grid.style.height = innerHeight + 'px';
+      drawGrid();
+    }
+    function drawGrid(){
+      const ctx = grid.getContext('2d');
+      ctx.clearRect(0,0,grid.width,grid.height);
+      ctx.scale(dpr,dpr);
+      // faint grid lines
+      ctx.strokeStyle = 'rgba(0,255,102,0.03)'; ctx.lineWidth = 1;
+      const step = 28;
+      for(let x=0;x<innerWidth;x+=step){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,innerHeight); ctx.stroke(); }
+      for(let y=0;y<innerHeight;y+=step){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(innerWidth,y); ctx.stroke(); }
+      ctx.setTransform(1,0,0,1,0,0);
+    }
+    window.addEventListener('resize', resize); resize();
 
-  clearTimeout(idleTimer);
-  idleTimer = setTimeout(goIdle, 2000);
-}
+    // radar canvas
+    const radar = document.getElementById('radar');
+    const rctx = radar.getContext('2d');
+    function resizeRadar(){ radar.width = 640*dpr; radar.height = 480*dpr; radar.style.width='100%'; radar.style.height='100%'; rctx.setTransform(dpr,0,0,dpr,0,0);} resizeRadar(); window.addEventListener('resize', resizeRadar);
 
-window.addEventListener('scroll', onScroll, {passive:true});
-</script>
+    let angle = 0; let nodes = [{x:80,y:60},{x:220,y:120},{x:320,y:40}];
+    function loop(){
+      rctx.clearRect(0,0,radar.width,radar.height);
+      // background
+      rctx.fillStyle = '#041017'; rctx.fillRect(0,0,radar.width/dpr,radar.height/dpr);
+      // concentric circles
+      const cx = (radar.width/dpr)/2, cy=(radar.height/dpr)/2; const maxR = Math.min(cx,cy)-10;
+      rctx.strokeStyle = 'rgba(0,255,102,0.06)';
+      for(let i=1;i<5;i++){ rctx.beginPath(); rctx.arc(cx,cy,(maxR/5)*i,0,Math.PI*2); rctx.stroke(); }
+      // nodes
+      nodes.forEach(n => { rctx.fillStyle='rgba(255,0,92,0.9)'; rctx.beginPath(); rctx.arc(n.x,n.y,6,0,Math.PI*2); rctx.fill(); rctx.fillStyle='rgba(255,255,255,0.06)'; rctx.fillText('node', n.x+8,n.y+4); });
+      // sweeping line
+      angle += 0.02; const ax = cx + Math.cos(angle)*maxR, ay = cy + Math.sin(angle)*maxR;
+      rctx.beginPath(); rctx.moveTo(cx,cy); rctx.lineTo(ax,ay); rctx.strokeStyle='rgba(0,255,102,0.45)'; rctx.lineWidth=2; rctx.stroke();
+      rctx.fillStyle='rgba(0,255,102,0.06)'; rctx.beginPath(); rctx.arc(cx,cy,maxR,angle-0.35,angle); rctx.fill();
+      requestAnimationFrame(loop);
+    }
+    loop();
 
+  })();
+  </script>
 </body>
 </html>
