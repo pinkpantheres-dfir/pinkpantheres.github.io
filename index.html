@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PinkPantheres — A forensic notebook of my DFIR work, research, and investigationswhat confogurations should i do in github repo - served with a little Pink Panther flair ;)</title>
-  <meta name="description" content="PinkPantheres — A forensic notebook of my DFIR work, research, and investigationswhat confogurations should i do in github repo - served with a little Pink Panther flair ;)" />
+  <title>PinkPantheres — DFIR & OSINT Portfolio</title>
+  <meta name="description" content="PinkPantheres — DFIR portfolio, case studies, CTF writeups and OSINT hunting." />
   <link rel="icon" href="/assets/favicon.png" />
   <style>
   :root{
-    --bg:#9191d9;              /* deep night */
-    --panel:#8888b3;
+    --bg:#07070b;              /* deep night */
+    --panel:#0f0f14;
     --neon-pink:#ff005c;       /* tactical hot-pink */
-    --radar:#eb75d7;     /* soft-pink */
+    --radar-green:#00ff66;     /* accent */
     --muted:#bfc3cc;
     --glass: rgba(255,255,255,0.03);
     --card-radius:12px;
@@ -92,7 +92,7 @@
         </div>
         <div>
           <h1>PinkPantheres</h1>
-          <p class="lead">DFIR Research Notes</p>
+          <p class="lead">DFIR • OSINT • CTF — hunting threats with a pink edge</p>
         </div>
       </div>
     </header>
@@ -110,9 +110,10 @@
           <div style="margin-top:12px;color:var(--muted);font-size:13px">Based in India • Open to collaborations • <a href="#contact" style="color:var(--neon-pink);text-decoration:none">Contact</a></div>
         </div>
 
-        <div class="hero-card radar-card">
-          <canvas id="radar" class="radar-canvas"></canvas>
-          <div class="radar-overlay"><div class="radar-label">Active hunt: 3 nodes</div></div>
+        <div class="hero-card" style="position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 30px rgba(0,0,0,0.6)">
+  <!-- animated black cat with pink hat -->
+  <img src="assets/cat-pink-hat.gif" alt="Pink Pantheres Cat" style="width:100%;height:auto;max-height:260px;object-fit:contain;animation:headMove 3s infinite ease-in-out" />
+</div></div>
         </div>
       </div>
 
@@ -159,8 +160,8 @@
         <h2 style="color:#fff;margin:0 0 8px">Contact &amp; Links</h2>
         <div class="card" style="display:flex;gap:12px;align-items:center">
           <div style="flex:1">
-            <p style="margin:0;color:var(--muted)">Email: <a href="mailto:hridhyap4002@gmail.com" style="color:var(--neon-pink)">hridhyap4002@gmail.com</a></p>
-            <p style="margin:6px 0 0;color:var(--muted)">GitHub: <a href="https://github.com/pinkpantheres-dfir" style="color:var(--neon-pink)">github.com/pinkpantheres-dfir</a></p>
+            <p style="margin:0;color:var(--muted)">Email: <a href="mailto:hello@pinkpantheres.dev" style="color:var(--neon-pink)">hello@pinkpantheres.dev</a></p>
+            <p style="margin:6px 0 0;color:var(--muted)">GitHub: <a href="https://github.com/pinkpantheres" style="color:var(--neon-pink)">github.com/pinkpantheres</a></p>
           </div>
           <div style="min-width:160px;text-align:right;color:var(--muted);font-size:13px">Available for freelance DFIR & OSINT engagements</div>
         </div>
@@ -210,7 +211,7 @@
       ctx.clearRect(0,0,grid.width,grid.height);
       ctx.scale(dpr,dpr);
       // faint grid lines
-      ctx.strokeStyle = 'rgba(0,255,102,0.03)'; ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(255,0,92,0.06)'; ctx.lineWidth = 1;
       const step = 28;
       for(let x=0;x<innerWidth;x+=step){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,innerHeight); ctx.stroke(); }
       for(let y=0;y<innerHeight;y+=step){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(innerWidth,y); ctx.stroke(); }
